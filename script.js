@@ -26,7 +26,7 @@ img.onload = () => {
     function apagar(x,y){
 
         ctx.beginPath();
-        ctx.arc(x,y,35,0,Math.PI*2);
+        ctx.arc(x,y,25,0,Math.PI*2);
         ctx.fill();
 
         verificar();
