@@ -310,5 +310,23 @@ img.addEventListener("touchend",()=>{
 movendo=false;
 
 });
+    
+// Zoom com a rodinha do mouse
+img.addEventListener("wheel", (e) => {
 
+    e.preventDefault();
+
+    if (e.deltaY < 0) {
+        escala += 0.2;
+    } else {
+        escala -= 0.2;
+    }
+
+    if (escala < 1) escala = 1;
+    if (escala > 5) escala = 5;
+
+    atualizar();
+
+}, { passive: false });
+    
 }
