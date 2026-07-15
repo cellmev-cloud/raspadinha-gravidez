@@ -26,7 +26,7 @@ img.onload = () => {
     function apagar(x,y){
 
         ctx.beginPath();
-        ctx.arc(x,y,25,0,Math.PI*2);
+        ctx.arc(x,y,35,0,Math.PI*2);
         ctx.fill();
 
         verificar();
@@ -99,7 +99,7 @@ img.onload = () => {
         let porcentagem = apagados/(pixels.length/4);
 
 
-        if(porcentagem > 0.70){
+        if(porcentagem > 0.60){
 
             revelou=true;
 
