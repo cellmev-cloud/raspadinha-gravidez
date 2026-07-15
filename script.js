@@ -19,7 +19,8 @@ img.onload = () => {
     ctx.font = "bold 30px Arial";
     ctx.textAlign = "center";
     ctx.fillText("RASPE AQUI", canvas.width/2, canvas.height/2);
-
+//Mostra a imagem somente depois que a Raspadinha estiver pronta
+    img.style.opacity="1";
     ctx.globalCompositeOperation = "destination-out";
 
 
