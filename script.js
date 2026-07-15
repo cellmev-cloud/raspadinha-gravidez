@@ -112,3 +112,59 @@ origin:{y:0.6}
 }
 
 }
+function ativarZoom(){
+
+let touches=[];
+
+img.addEventListener("touchstart",e=>{
+
+touches=e.touches;
+
+const agora=Date.now();
+
+if(agora-lastTap<300){
+
+scale=scale===1?2:1;
+
+img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;
+
+}
+
+lastTap=agora;
+
+if(e.touches.length==2){
+
+const dx=e.touches[0].clientX-e.touches[1].clientX;
+const dy=e.touches[0].clientY-e.touches[1].clientY;
+
+startDistance=Math.hypot(dx,dy);
+
+initialScale=scale;
+
+}
+
+});
+
+img.addEventListener("touchmove",e=>{
+
+if(e.touches.length==2){
+
+e.preventDefault();
+
+const dx=e.touches[0].clientX-e.touches[1].clientX;
+const dy=e.touches[0].clientY-e.touches[1].clientY;
+
+const distance=Math.hypot(dx,dy);
+
+scale=initialScale*(distance/startDistance);
+
+if(scale<1)scale=1;
+if(scale>5)scale=5;
+
+img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;
+
+}
+
+},{passive:false});
+
+}
