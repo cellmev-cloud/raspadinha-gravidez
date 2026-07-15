@@ -277,13 +277,21 @@ atualizar();
 
 else if(e.touches.length===1 && movendo){
 
+posX = e.touches[0].clientX - inicioX;
+posY = e.touches[0].clientY - inicioY;
 
-posX =
-e.touches[0].clientX - inicioX;
+
+// Limita o movimento da imagem
+let limiteX = img.width * (escala - 1) / 2;
+let limiteY = img.height * (escala - 1) / 2;
 
 
-posY =
-e.touches[0].clientY - inicioY;
+if(posX > limiteX) posX = limiteX;
+if(posX < -limiteX) posX = -limiteX;
+
+
+if(posY > limiteY) posY = limiteY;
+if(posY < -limiteY) posY = -limiteY;
 
 
 atualizar();
