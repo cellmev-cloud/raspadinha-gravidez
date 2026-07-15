@@ -45,6 +45,10 @@ max-width:90vw;
 border-radius:20px;
 
 display:block;
+
+opacity:0;
+
+transition:opacity .3s;
   
 transform-origin:center center;
 transition:transform .2s ease;
