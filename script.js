@@ -99,7 +99,7 @@ img.onload = () => {
         let porcentagem = apagados/(pixels.length/4);
 
 
-        if(porcentagem > 0.60){
+        if(porcentagem > 0.80){
 
             revelou=true;
 
