@@ -1,170 +1,306 @@
-const img=document.getElementById("foto");
-const canvas=document.getElementById("scratch");
-const mensagem=document.getElementById("mensagem");
-const musica=document.getElementById("musica");
+const img = document.getElementById("foto");
+const canvas = document.getElementById("scratch");
+const mensagem = document.getElementById("mensagem");
+const musica = document.getElementById("musica");
 
-let scale = 1;
-let startDistance = 0;
-let initialScale = 1;
-let posX = 0;
-let posY = 0;
-let lastTap = 0;
+let revelou = false;
 
-let revelou=false;
+img.onload = () => {
 
-img.onload=()=>{
+    canvas.width = img.width;
+    canvas.height = img.height;
 
-canvas.width=img.width;
-canvas.height=img.height;
+    const ctx = canvas.getContext("2d");
 
-const ctx=canvas.getContext("2d");
+    ctx.fillStyle = "#d4af37";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
-ctx.fillStyle="#d4af37";
-ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "bold 30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("RASPE AQUI", canvas.width/2, canvas.height/2);
 
-ctx.fillStyle="white";
-ctx.font="bold 30px Arial";
-ctx.textAlign="center";
-ctx.fillText("RASPE AQUI",canvas.width/2,canvas.height/2);
+    ctx.globalCompositeOperation = "destination-out";
 
-ctx.globalCompositeOperation="destination-out";
 
-function apagar(x,y){
+    function apagar(x,y){
 
-ctx.beginPath();
+        ctx.beginPath();
+        ctx.arc(x,y,35,0,Math.PI*2);
+        ctx.fill();
 
-ctx.arc(x,y,30,0,Math.PI*2);
+        verificar();
+    }
 
-ctx.fill();
 
-verificar();
+    let pressionado=false;
 
-}
 
-let pressionado=false;
+    canvas.addEventListener("pointerdown",()=>{
 
-canvas.onpointerdown=()=>{
+        pressionado=true;
 
-pressionado=true;
+        musica.play().catch(()=>{});
 
-musica.play().catch(()=>{});
+    });
+
+
+    canvas.addEventListener("pointerup",()=>{
+
+        pressionado=false;
+
+    });
+
+
+    canvas.addEventListener("pointermove",(e)=>{
+
+        if(!pressionado)return;
+
+        const rect=canvas.getBoundingClientRect();
+
+        apagar(
+
+        (e.clientX-rect.left)*(canvas.width/rect.width),
+
+        (e.clientY-rect.top)*(canvas.height/rect.height)
+
+        );
+
+    });
+
+
+    function verificar(){
+
+        if(revelou)return;
+
+
+        const pixels=ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        ).data;
+
+
+        let apagados=0;
+
+
+        for(let i=3;i<pixels.length;i+=4){
+
+            if(pixels[i]===0){
+
+                apagados++;
+
+            }
+
+        }
+
+
+        let porcentagem = apagados/(pixels.length/4);
+
+
+        if(porcentagem > 0.60){
+
+            revelou=true;
+
+
+            // Remove a raspadinha
+            canvas.style.display="none";
+
+
+            mensagem.style.display="block";
+
+
+            confetti({
+
+                particleCount:250,
+
+                spread:180,
+
+                origin:{
+                    y:0.6
+                }
+
+            });
+
+
+            ativarZoom();
+
+        }
+
+    }
 
 };
 
-canvas.onpointerup=()=>{
 
-pressionado=false;
+// =========================
+// ZOOM DA FOTO
+// =========================
 
-};
-
-canvas.onpointermove=(e)=>{
-
-if(!pressionado)return;
-
-const r=canvas.getBoundingClientRect();
-
-apagar(
-
-(e.clientX-r.left)*(canvas.width/r.width),
-
-(e.clientY-r.top)*(canvas.height/r.height)
-
-);
-
-};
-
-function verificar(){
-
-if(revelou)return;
-
-const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-
-let apagados=0;
-
-for(let i=3;i<pixels.length;i+=4){
-
-if(pixels[i]==0)apagados++;
-
-}
-
-const porcentagem=apagados/(pixels.length/4);
-
-if(porcentagem>0.60){
-
-revelou=true;
-
-mensagem.style.display="block";
-
-confetti({
-
-particleCount:250,
-
-spread:180,
-
-origin:{y:0.6}
-
-});
-
-  ativarZoom();
-
-}
-
-}
-
-}
 function ativarZoom(){
 
-let touches=[];
+let escala=1;
 
-img.addEventListener("touchstart",e=>{
+let inicioDistancia=0;
 
-touches=e.touches;
+let escalaInicial=1;
+
+let posX=0;
+
+let posY=0;
+
+let inicioX=0;
+
+let inicioY=0;
+
+let movendo=false;
+
+let ultimoToque=0;
+
+
+
+function atualizar(){
+
+img.style.transform =
+`translate(${posX}px,${posY}px) scale(${escala})`;
+
+}
+
+
+
+img.addEventListener("touchstart",(e)=>{
+
 
 const agora=Date.now();
 
-if(agora-lastTap<300){
 
-scale=scale===1?2:1;
+if(agora-ultimoToque < 300){
 
-img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;
+escala = escala === 1 ? 2 : 1;
+
+posX=0;
+posY=0;
+
+atualizar();
+
+}
+
+
+ultimoToque=agora;
+
+
+
+if(e.touches.length===2){
+
+
+let dx =
+e.touches[0].clientX -
+e.touches[1].clientX;
+
+
+let dy =
+e.touches[0].clientY -
+e.touches[1].clientY;
+
+
+inicioDistancia =
+Math.sqrt(dx*dx+dy*dy);
+
+
+escalaInicial=escala;
+
 
 }
 
-lastTap=agora;
 
-if(e.touches.length==2){
+if(e.touches.length===1){
 
-const dx=e.touches[0].clientX-e.touches[1].clientX;
-const dy=e.touches[0].clientY-e.touches[1].clientY;
+movendo=true;
 
-startDistance=Math.hypot(dx,dy);
+inicioX=e.touches[0].clientX-posX;
 
-initialScale=scale;
+inicioY=e.touches[0].clientY-posY;
 
 }
+
 
 });
 
-img.addEventListener("touchmove",e=>{
 
-if(e.touches.length==2){
+
+img.addEventListener("touchmove",(e)=>{
+
 
 e.preventDefault();
 
-const dx=e.touches[0].clientX-e.touches[1].clientX;
-const dy=e.touches[0].clientY-e.touches[1].clientY;
 
-const distance=Math.hypot(dx,dy);
 
-scale=initialScale*(distance/startDistance);
+if(e.touches.length===2){
 
-if(scale<1)scale=1;
-if(scale>5)scale=5;
 
-img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;
+let dx =
+e.touches[0].clientX -
+e.touches[1].clientX;
+
+
+let dy =
+e.touches[0].clientY -
+e.touches[1].clientY;
+
+
+let distancia =
+Math.sqrt(dx*dx+dy*dy);
+
+
+
+escala =
+escalaInicial *
+(distancia/inicioDistancia);
+
+
+
+if(escala<1)
+escala=1;
+
+
+if(escala>5)
+escala=5;
+
+
+
+atualizar();
+
 
 }
 
+
+
+else if(e.touches.length===1 && movendo){
+
+
+posX =
+e.touches[0].clientX - inicioX;
+
+
+posY =
+e.touches[0].clientY - inicioY;
+
+
+atualizar();
+
+
+}
+
+
+
 },{passive:false});
+
+
+
+img.addEventListener("touchend",()=>{
+
+movendo=false;
+
+});
 
 }
