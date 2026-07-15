@@ -105,6 +105,8 @@ origin:{y:0.6}
 
 });
 
+  ativarZoom();
+
 }
 
 }
