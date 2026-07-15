@@ -3,6 +3,13 @@ const canvas=document.getElementById("scratch");
 const mensagem=document.getElementById("mensagem");
 const musica=document.getElementById("musica");
 
+let scale=1;
+let startDistance=0;
+let initialScale=1;
+let posX=0;
+let posY=0;
+let lastTap=0;
+
 let revelou=false;
 
 img.onload=()=>{
